@@ -1,0 +1,29 @@
+name: CMake Build & Test
+
+on:
+  push:
+    branches: [ "main", "lab3" ]
+  pull_request:
+    branches: [ "main", "lab3" ]
+
+env:
+  # Kiểu build: có thể đổi sang Debug nếu cần
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Configure CMake
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build build --config ${{env.BUILD_TYPE}} -j
+
+    - name: Run tests
+      working-directory: build
+      run: ctest --output-on-failure -C ${{env.BUILD_TYPE}}
